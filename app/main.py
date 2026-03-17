@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
-from datetime import date
-from typing import Optional
+import datetime
 
 app = FastAPI(
     title="Health Record Validator",
@@ -24,7 +23,7 @@ class HealthRecord(BaseModel):
     @classmethod
     def validate_date(cls, v):
         try:
-            date.fromisoformat(v)
+            datetime.date.fromisoformat(v)
         except ValueError:
             raise ValueError("record_date must be in YYYY-MM-DD format")
         return v
@@ -74,8 +73,8 @@ def validate_record(record: HealthRecord):
         warnings.append("Elevated BP noted for patient under 18 — verify reading")
 
     # Future date check
-    record_date = date.fromisoformat(record.record_date)
-    if record_date > date.today():
+    record_date = datetime.date.fromisoformat(record.record_date)
+    if record_date > datetime.date.today():
         errors.append("record_date cannot be in the future")
 
     return ValidationResult(
